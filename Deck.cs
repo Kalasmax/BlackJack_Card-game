@@ -8,25 +8,27 @@ namespace BlackJack
 {
     class Deck
     {
+        //-----Properties-----
         private const int DECK_SIZE = 52;
         private const int SUIT_COUNT = 4;
         private const int CARD_COUNT = 13;
+        private int nrOfDecks;
 
-        private int nrOfDecks = 1;
+        public List<Card> Cards = new List<Card>();
+        public int drawnCards = 0;
 
-        public List<Card> Cards { get; set; }
-
-        //i konstruktorn så bestäms antalet kortlekar
+        //-----Constructor-----
         public Deck(int nrOfDecks)
         {
             this.nrOfDecks = nrOfDecks;
-            Cards = Setup();                             
+            Setup(nrOfDecks);                             
         }
-        
+
+        //-----Methods-----
         public void Shuffle()
         {
             var random = new Random();
-            int count = Cards.Count; //52 som kortleken
+            int count = Cards.Count; 
             while (count > 1)
             {
                 count--;
@@ -35,61 +37,35 @@ namespace BlackJack
                 Cards[randomNumber] = Cards[count];
                 Cards[count] = card;
             }
-        }
-        
+            drawnCards = 0;
+        }      
         public Card Draw()
         {
-            // ett försök att skapa kort slumpmässigt med Random
-            Random random = new Random();
-
-            int cardShuffler = random.Next(1, 53);
-            CardValue cardvalue = new CardValue();
-            CardSuitType cardsuit = new CardSuitType();
-
-            if (cardShuffler <= 13)
+            if (drawnCards > (Cards.Count / 2))
             {
-                cardsuit = CardSuitType.Spades;
-                cardvalue = (CardValue)cardShuffler;
+                Shuffle();
             }
-            if (cardShuffler >= 14 && cardShuffler <= 26)
-            {
-                cardsuit = CardSuitType.Hearts;
-                int newCardValue = cardShuffler - 13;
-                cardvalue = (CardValue)newCardValue;
-            }
-            if (cardShuffler >= 27 && cardShuffler <= 39)
-            {
-                cardsuit = CardSuitType.Diamond;
-                int newCardValue = cardShuffler - 26;
-                cardvalue = (CardValue)newCardValue;
-            }
-            if (cardShuffler >= 40)
-            {
-                cardsuit = CardSuitType.Clubs;
-                int newCardValue = cardShuffler - 39;
-                 cardvalue = (CardValue)newCardValue;
-            }
-
-            // skapar objektet cards av klassen Card
-            Card cards = new Card(cardvalue, cardsuit);
-            return cards;
+            Card drawnCard = Cards[drawnCards];                       
+            drawnCards ++;           
+            return drawnCard;
         }
-
-        private List<Card> Setup()
+        public void Setup(int nrOfDecks)
         {
-            var cards = new List<Card>();
-            
+            if(Cards != null)            
+                Cards.Clear();
 
-            for (int i = 1; i <= SUIT_COUNT; i++)
+            for (int k = 0; k < nrOfDecks; k++)
             {
-                for (int j = 1; j <= CARD_COUNT; j++)
+                for (int i = 1; i <= SUIT_COUNT; i++)
                 {
-                    cards.Add(new Card((CardValue)j,(CardSuitType)i));
-                }                               
-            }
+                    for (int j = 1; j <= CARD_COUNT; j++)
+                    {
+                        Card shuffledCardDeck = new Card(j, i);
 
-            return cards;
+                        Cards.Add(shuffledCardDeck);
+                    }
+                }
+            }                     
         }
-
     }   
 }
